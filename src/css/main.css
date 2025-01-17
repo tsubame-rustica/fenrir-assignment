@@ -1,0 +1,44 @@
+@import url(/src/css/variable.css);
+
+main {
+    position: relative;
+    width: 100%;
+    height: calc(100% - var(--header-height));
+    top: var(--header-height);
+}
+
+main .filterTab {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 6svh;
+}
+
+main .filterTab > * {
+    width: 50%;
+    height: 100%;
+    border-bottom: solid 4px #0000;
+}
+
+main .filterTab .selected {
+    border-bottom: solid 4px var(--base-color);
+}
+
+main .filterTab button {
+    width: 100%;
+    height: 100%;
+    background-color: #0000;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+main #map {
+    width: 100%;
+    height: calc(100svh - 6svh - var(--header-height));
+}
+
+main #map #showMap {
+    width: 100%;
+    height: 100%;
+}
