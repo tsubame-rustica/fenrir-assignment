@@ -6,6 +6,9 @@
         <title>フェンリル課題選考</title>
         <link rel="stylesheet" href="/src/css/sanitize.css">
         <link rel="stylesheet" href="/src/css/header.css">
+        <link rel="stylesheet" href="/src/css/main.css">
+
+        <script src="http://maps.google.com/maps/api/js?key=AIzaSyBtUgCxdnXBRZphsE9NkL9KdwpazR-T1aY&language=ja"></script>
     </head>
     <body>
       <header>
@@ -13,6 +16,22 @@
               <h1 id="title"></h1>
           </div>
       </header>
-      <div id="app"></div>
+      <main>
+          <div class="filterTab">
+              <div class="map selected">
+                  <button id="searchMapBtn" type="button">地図から探す</button>
+              </div>
+              <div class="condition">
+                  <button id="searchConditionBtn" type="button">条件から探す</button>
+              </div>
+          </div>
+          <div id="map">
+              <div id="showMap"></div>
+          </div>
+          <div id="condition">
+
+          </div>
+      </main>
+      <script type="module" src="./src/map.js"></script>
     </body>
 </html>
