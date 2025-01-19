@@ -76,12 +76,27 @@ const modalTitle    = document.getElementById('shopTitle');
 const catchCopy     = document.getElementById('catchCopy');
 const shopThumbnail = document.getElementById('thumbnailList');
 
+const closeModalBtn = document.getElementById('closeModalBtn');
+
 function showShopModal(fetchData) {
-    console.log(fetchData);
-    modalTitle.innerHTML    = '<h2>' + fetchData['name'] + '</h2>';
-    catchCopy.innerHTML     = fetchData['catch'];
-    shopThumbnail.innerHTML = '<img src="' + fetchData['photo']['pc']['l'] + '" alt="店舗画像" class="">';
+    const mapTools              = document.querySelectorAll('.gmnoprint.gm-bundled-control')[1];
+
+    modal.style.display         = 'block';
+    mapTools.style.display      = 'none';
+
+    modalTitle.innerHTML        = '<h2>' + fetchData['name'] + '</h2>';
+    catchCopy.innerHTML         = fetchData['catch'];
+    shopThumbnail.innerHTML     = '<img src="' + fetchData['photo']['pc']['l'] + '" alt="店舗画像" class="">';
 }
+
+function closeShopModal() {
+    const mapTools              = document.querySelectorAll('.gmnoprint.gm-bundled-control')[1];
+
+    modal.style.display         = 'none';
+    mapTools.style.display      = 'block';
+}
+
+closeModalBtn.addEventListener('click', closeShopModal, false);
 
 function fetchRestaurantInfoFromMap(currentLocation) {
     const apiUrl = 'http://localhost:8080/foreign_api/gourmet/v1';
