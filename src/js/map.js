@@ -4,31 +4,32 @@ let watchId;
 let searchResultsArr = [];
 
 function initMap() {
+    // 座標の初期値（東京駅）
     const initialPos = { lat: 35.6811673, lng: 139.7670516 };
 
     map = new google.maps.Map(
         document.getElementById('showMap'), {
-            center: initialPos,
-            zoom: 16,
-            styles: [
+            center  : initialPos,
+            zoom    : 16,
+            styles  : [
                 // POI（ピン）を非表示
                 {
-                    featureType: "poi", 
-                    stylers: [{ visibility: "off" }],
+                    featureType : "poi", 
+                    stylers     : [{ visibility: "off" }],
                 },
                 // 交通機関のアイコンを非表示
                 {
-                    featureType: "transit", 
-                    stylers: [{ visibility: "off" }],
+                    featureType : "transit", 
+                    stylers     : [{ visibility: "off" }],
                 },
                 // 道路のラベルを非表示
                 {
-                    featureType: "road", 
-                    elementType: "labels.icon",
-                    stylers: [{ visibility: "off" }],
+                    featureType : "road", 
+                    elementType : "labels.icon",
+                    stylers     : [{ visibility: "off" }],
                 }
             ],
-            mapTypeId: 'roadmap',
+            mapTypeId   : 'roadmap',
         }
     );
 
@@ -60,9 +61,9 @@ function trackCurrentLocation() {
                 console.error(error);
             },
             {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0,
+                enableHighAccuracy  : true,
+                timeout             : 5000,
+                maximumAge          : 0,
             }
         );
     } else {
@@ -70,8 +71,16 @@ function trackCurrentLocation() {
     }
 }
 
-function showShopDetail(fetchData, shopIndex) {
-    console.log(fetchData['results']['shop'][shopIndex]);
+const modal         = document.getElementById('modal');
+const modalTitle    = document.getElementById('shopTitle');
+const catchCopy     = document.getElementById('catchCopy');
+const shopThumbnail = document.getElementById('thumbnailList');
+
+function showShopModal(fetchData) {
+    console.log(fetchData);
+    modalTitle.innerHTML    = '<h2>' + fetchData['name'] + '</h2>';
+    catchCopy.innerHTML     = fetchData['catch'];
+    shopThumbnail.innerHTML = '<img src="' + fetchData['photo']['pc']['l'] + '" alt="店舗画像" class="">';
 }
 
 function fetchRestaurantInfoFromMap(currentLocation) {
@@ -79,7 +88,6 @@ function fetchRestaurantInfoFromMap(currentLocation) {
     const apiKey = '2506182a2b82d52b'
     const params = new URLSearchParams({
         key     : apiKey,
-        // large_area: 'Z011', // 例: 東京
         lat     : currentLocation.lat,
         lng     : currentLocation.lng,
         range   : 3,
@@ -97,23 +105,24 @@ function fetchRestaurantInfoFromMap(currentLocation) {
         return response.json(); // レスポンスをJSONとしてパース
     })
     .then((fetchData) => {
-        console.log(fetchData);
-        for (let fetchShopIndex = 0; fetchShopIndex < fetchData['results']['results_available']; fetchShopIndex++) {
-            fetchData['results']['shop'][fetchShopIndex]['fetchIndex'] = fetchShopIndex;
-        }
-        fetchData['results']['shop'].forEach((shopDetails) => {
+        let shopIndex = 0;  // マーカーに紐づける店舗のインデックス
+        const shopListJson = fetchData['results']['shop'];
+        shopListJson.forEach((shopDetails) => {
+            shopDetails.fetchShopIndex = shopIndex;
             const marker = new google.maps.Marker({
                 position: {
-                    lat: shopDetails.lat,
-                    lng: shopDetails.lng,
+                    lat : shopDetails.lat,
+                    lng : shopDetails.lng,
                 },
-                map: map,
+                map : map,
             });
 
             // マーカークリック時のイベントリスナー
             google.maps.event.addListener(marker, "click", () => {
-                showShopDetail(fetchData, shopDetails.fetchIndex);
+                showShopModal(shopListJson[shopDetails.fetchShopIndex]);
             });
+
+            shopIndex++;
         });
     })
     .catch(error => {
