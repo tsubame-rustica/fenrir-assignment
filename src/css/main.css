@@ -15,12 +15,14 @@ main .filterTab {
 }
 
 main .filterTab > * {
+    display             : none;
     width               : 50%;
     height              : 100%;
     border-bottom       : solid 4px #0000;
 }
 
 main .filterTab .selected {
+    display             : block;
     border-bottom       : solid 4px var(--base-color);
 }
 
@@ -28,9 +30,9 @@ main .filterTab button {
     width               : 100%;
     height              : 100%;
     background-color    : #0000;
-    border: none;
-    padding: 0;
-    margin: 0;
+    border              : none;
+    padding             : 0;
+    margin              : 0;
 }
 
 main #map {
