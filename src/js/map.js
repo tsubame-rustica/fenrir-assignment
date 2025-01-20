@@ -1,4 +1,4 @@
-let map;
+let googleMap;
 let currentLocationMarker;
 let watchId;
 let searchResultsArr = [];
@@ -7,7 +7,7 @@ function initMap() {
     // 座標の初期値（東京駅）
     const initialPos = { lat: 35.6811673, lng: 139.7670516 };
 
-    map = new google.maps.Map(
+    googleMap = new google.maps.Map(
         document.getElementById('showMap'), {
             center  : initialPos,
             zoom    : 16,
@@ -35,7 +35,7 @@ function initMap() {
 
     currentLocationMarker = new google.maps.Marker({
         position: initialPos,
-        map: map,
+        map: googleMap,
         title: "Your Current Location",
         icon : {
             url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
@@ -53,7 +53,7 @@ function trackCurrentLocation() {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude,
                 };
-                map.setCenter(currentLocation);
+                googleMap.setCenter(currentLocation);
                 currentLocationMarker.setPosition(currentLocation);
                 fetchRestaurantInfoFromMap(currentLocation);
             },
@@ -129,7 +129,7 @@ function fetchRestaurantInfoFromMap(currentLocation) {
                     lat : shopDetails.lat,
                     lng : shopDetails.lng,
                 },
-                map : map,
+                map : googleMap,
             });
 
             // マーカークリック時のイベントリスナー
@@ -143,6 +143,34 @@ function fetchRestaurantInfoFromMap(currentLocation) {
     .catch(error => {
         console.error('Error:', error); // エラーハンドリング
     });
+}
+
+// タブの切り替えに関係する要素を取得
+const mapBtn                = document.getElementById('searchMapBtn');
+const conditionBtn          = document.getElementById('searchConditionBtn');
+const mapTab                = document.querySelector('.map');
+const conditionTab          = document.querySelector('.condition');
+
+// 各タブで表示する要素を取得
+const mapScreen             = document.getElementById('map');
+const conditionScreen       = document.getElementById('condition');
+
+mapBtn.addEventListener('click', {type: 'map', handleEvent: switchSearchType}, false);
+conditionBtn.addEventListener('click', {type: 'condition', handleEvent: switchSearchType}, false);
+
+function switchSearchType(e) {
+    console.log(this.type);
+    if (this.type === 'map') {
+        mapTab.classList.add('selected');
+        conditionTab.classList.remove('selected');
+        mapScreen.style.display = 'block';
+        conditionScreen.style.display = 'none';
+    } else if (this.type === 'condition') {
+        mapTab.classList.remove('selected');
+        conditionTab.classList.add('selected');
+        mapScreen.style.display = 'none';
+        conditionScreen.style.display = 'block';
+    }
 }
 
 // ページを閉じた際にトラッキングを停止
