@@ -1,0 +1,245 @@
+@import url(/src/css/variable.css);
+
+form {
+    display         : flex;
+    flex-direction  : column;
+    align-items     : center;
+    width           : 90%;
+    margin          : 0 auto;
+    gap             : 1rem;
+}
+
+.area {
+    width           : 100%;
+}
+
+.area .areaInput {
+    position        : relative;
+    width           : max-content;
+    left            : 5%;
+}
+
+.area #getCurrentLocationBtn {
+    background-color: #ffaa65;
+    color           : #fff;
+    border          : none;
+    border-radius   : 4px;
+    padding         : 0.125rem 0.25rem;
+}
+
+.area #getCurrentLocationBtn:active {
+    background-color: #ff9b49;
+}
+
+.area input#area {
+    width           : 12rem;
+    min-height      : 2rem;
+    border          : solid 1px #dbdbdb;
+    border-radius   : 4px;
+    padding         : 0.25rem 0.125rem;
+}
+
+
+
+
+.genre {
+    width           : 100%;
+}
+
+.genre .genreSelect {
+    position        : relative;
+    width           : 80%;
+    left            : 5%;
+}
+
+
+/* 選択されたジャンルのスタイル */
+.genre .genreSelect .displaySelectedGenre {
+    display         : flex;
+    flex-direction  : row;
+    width           : 100%;
+    border-radius   : 4px;
+    border          : solid 1px #dbdbdb;
+}
+
+.genre .genreSelect .displaySelectedGenre .displaySelectedGenreInner {
+    width           : 90%;
+    min-height      : 2.4rem;
+    padding         : 0.5rem;
+    border-right    : none;
+}
+
+.genre .genreSelect .displaySelectedGenre button {
+    width           : 10%;
+    background-color: #0000;
+    border          : none;
+    padding         : 0;
+    margin          : 0;
+}
+
+.genre .genreSelect .displaySelectedGenre #selectedList {
+    display         : flex;
+    flex-direction  : row;
+    flex-wrap       : wrap;
+    width           : 100%;
+    gap             : 0.25rem;
+    padding         : 0;
+    margin          : 0;
+    list-style-type : none;
+}
+
+.genre .genreSelect .displaySelectedGenre #selectedList li {
+    display         : flex;
+    flex-direction  : row;
+    align-items     : center;
+    width           : max-content;
+    background-color: #ffaa65;
+    color           : #fff;
+    font-size       : 0.75rem;
+    border-radius   : 4px;
+    padding         : 0.5rem;
+}
+
+.genre .genreSelect .displaySelectedGenre #selectedList button {
+    width           : 1rem;
+    background-color: #0000;
+    color           : #fff;
+    font-size       : 1rem;
+    border          : none;
+    padding         : 0;
+    padding-top     : 0.075rem;
+    margin          : 0;
+}
+
+
+
+/* 未選択ジャンルのスタイル */
+.genre .genreSelect .displayUnselectedGenre {
+    display         : none;
+    width           : 100%;
+    max-height      : 8rem;
+    overflow-y      : scroll;
+    border-radius   : 8px;
+    border          : solid 1px #dbdbdb;
+}
+
+.genre .genreSelect .displayUnselectedGenre #unselectedList {
+    width           : 100%;
+    padding         : 0;
+    margin          : 0;
+    list-style-type : none;
+}
+
+.genre .genreSelect .displayUnselectedGenre #unselectedList li {
+    width           : 100%;
+    background-color: #fff;
+}
+
+.genre .genreSelect .displayUnselectedGenre #unselectedList li:hover {
+    background-color: #ddd;
+}
+
+.genre .genreSelect .displayUnselectedGenre #unselectedList button {
+    width           : 100%;
+    height          : 100%;
+    border          : none;
+    background-color: #0000;
+    text-align      : left;
+    box-sizing      : border-box;
+    padding         : 0.5rem;
+    margin          : 0;
+}
+
+
+
+/* 距離選択のスタイル */
+.distance {
+    width           : 100%;
+}
+
+.distance .distanceSelect {
+    position        : relative;
+    width           : 80%;
+    left            : 5%;
+}
+
+.distance .distanceSelect .displaySelectedDistance {
+    display         : flex;
+    flex-direction  : row;
+    width           : 100%;
+    border-radius   : 4px;
+    border          : solid 1px #dbdbdb;
+}
+
+.distance .distanceSelect .displaySelectedDistance #showSlectedDistance {
+    width           : 90%;
+    min-height      : 2.4rem;
+    padding         : 0.5rem;
+    border-right    : none;
+}
+
+.distance .distanceSelect .displaySelectedDistance button {
+    width           : 10%;
+    background-color: #0000;
+    border          : none;
+    padding         : 0;
+    margin          : 0;
+}
+
+.distance .distanceSelect .displayUnselectedDistance {
+    display         : none;
+    width           : 100%;
+    max-height      : 8rem;
+    overflow-y      : scroll;
+    border-radius   : 8px;
+    border          : solid 1px #dbdbdb;
+}
+
+.distance .distanceSelect .displayUnselectedDistance #distanceList {
+    width           : 100%;
+    padding         : 0;
+    margin          : 0;
+    list-style-type : none;
+}
+
+.distance .distanceSelect .displayUnselectedDistance #distanceList li {
+    width           : 100%;
+    background-color: #fff;
+}
+
+.distance .distanceSelect .displayUnselectedDistance #distanceList li:hover {
+    background-color: #ddd;
+}
+
+.distance .distanceSelect .displayUnselectedDistance #distanceList button {
+    width           : 100%;
+    height          : 100%;
+    border          : none;
+    background-color: #0000;
+    text-align      : left;
+    box-sizing      : border-box;
+    padding         : 0.5rem;
+    margin          : 0;
+}
+
+
+.searchBtnOuter {
+    width           : 100%;
+    display         : flex;
+    justify-content : center;
+    padding-top     : 8rem;
+}
+
+/* プルダウンを表示する用のスタイル */
+.showSelectList {
+    display         : block !important;
+}
+
+#searchBtn {
+    width           : 40%;
+    height          : 3.2rem;
+    background-color: var(--base-color);
+    color           : #fff;
+    border          : none;
+    border-radius   : 9999px;
+}

@@ -78,7 +78,9 @@ const shopThumbnail = document.getElementById('thumbnailList');
 
 const closeModalBtn = document.getElementById('closeModalBtn');
 
+
 function showShopModal(fetchData) {
+
     const mapTools              = document.querySelectorAll('.gmnoprint.gm-bundled-control')[1];
 
     modal.style.display         = 'block';
@@ -88,6 +90,7 @@ function showShopModal(fetchData) {
     catchCopy.innerHTML         = fetchData['catch'];
     shopThumbnail.innerHTML     = '<img src="' + fetchData['photo']['pc']['l'] + '" alt="店舗画像" class="">';
 }
+
 
 function closeShopModal() {
     const mapTools              = document.querySelectorAll('.gmnoprint.gm-bundled-control')[1];
@@ -105,10 +108,11 @@ function fetchRestaurantInfoFromMap(currentLocation) {
         key     : apiKey,
         lat     : currentLocation.lat,
         lng     : currentLocation.lng,
-        range   : 3,
+        range   : 5,
         count   : 30,
         format  : 'json',     // レスポンス形式をJSONに指定
     });
+    console.log(params.toString());
 
     fetch(`${apiUrl}?${params.toString()}`, {
         method: 'GET',
@@ -158,6 +162,8 @@ const conditionScreen       = document.getElementById('condition');
 mapBtn.addEventListener('click', {type: 'map', handleEvent: switchSearchType}, false);
 conditionBtn.addEventListener('click', {type: 'condition', handleEvent: switchSearchType}, false);
 
+
+// タブを切り替える際にタブのスタイルの変更と表示する要素の切り替えを行う
 function switchSearchType(e) {
     console.log(this.type);
     if (this.type === 'map') {
