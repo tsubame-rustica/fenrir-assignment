@@ -26,20 +26,15 @@
           </div>
       </header>
       <main>
-          <!-- 
-            mainブランチにマージするときには.selectedをdiv.mapに付与する
-            条件検索の機能を実装する間は一時的にdiv.conditionに.selectedを付与する
-           -->
           <div class="filterTab">
-              <div class="map">
+              <div class="map selected">
                   <button id="searchMapBtn" type="button">地図から探す</button>
               </div>
-              <div class="condition selected">
+              <div class="condition">
                   <button id="searchConditionBtn" type="button">条件から探す</button>
               </div>
           </div>
-          <!-- 条件検索機能実装中はdisplayプロパティの初期値をnoneにしておく -->
-          <div id="map" style="display: none;">
+          <div id="map">
               <div id="showMap"></div>
               <div id="modal">
                 <div id="closeModal">
@@ -49,7 +44,7 @@
                 </div>
               </div>
           </div>
-          <div id="condition">
+          <div id="condition" style="display: none;">
             <form action="">
               <div class="area">
                 <p for="">県や市区町村</p>

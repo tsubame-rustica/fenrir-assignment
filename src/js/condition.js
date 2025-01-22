@@ -250,6 +250,7 @@ const shopPagingListJson = {
 }
 
 let pageIndex = 1;
+let maxPageIndex = 1;
 
 function fetchFilteredShopData(conditionObj) {
     const apiUrl = 'http://localhost:8080/foreign_api/gourmet/v1';
@@ -345,6 +346,7 @@ function fetchFilteredShopData(conditionObj) {
         resultList.innerHTML = '';
 
         const pagingGroup = Math.ceil(shopListJson.length / 5);
+        maxPageIndex = pagingGroup;
         for (let i = 0; i < pagingGroup; i++) {
             shopPagingListJson.group.push({
                 page    : i + 1,
@@ -356,10 +358,11 @@ function fetchFilteredShopData(conditionObj) {
                 ]
             });
             for (let j = 0; j < 5; j++) {
-                if (shopListJson[j] === undefined) {
+                if (i * 5 + j >= shopListJson.length) {
                     break;
                 }
                 const shopDetails       = shopListJson[i * 5 + j];
+                console.log(shopDetails);
                 const shopName          = '<h2 class="shopName">' + shopDetails.name + '</h2>';
                 const shopCatch         = '<h3 class="shopCatch">' + shopDetails.genre.catch + '</h3>';
                 const shopAccess        = '<div class="shopAccess"><img class="detailsIcon" src="/src/img/location.svg" alt="ピンのアイコン"><span>' + shopDetails.access + '</span></div>';
@@ -372,6 +375,7 @@ function fetchFilteredShopData(conditionObj) {
                 shopPagingListJson.group[i].elseInfo[j]     = shopDetails;
             }
         }
+        pageIndex = 1;
         updateShopList(pageIndex);  // ページングの初期値は1
     })
     .catch(error => {
@@ -390,6 +394,7 @@ function updateShopList(currentPageIndex) {
     window.scrollTo(0, 0);
 
     resultList.innerHTML = '';
+
     
     shopPagingListJson.group[currentPageIndex - 1].shopInfoHtml.forEach(html => {
         resultList.innerHTML += html;
@@ -411,9 +416,15 @@ function updateShopList(currentPageIndex) {
         startIndex -= 1;
         nextBtn.style.visibility = 'hidden';
     }
+    if (maxPageIndex === 1) {
+        nextBtn.style.visibility = 'hidden';
+        prevBtn.style.visibility = 'hidden';
+    }
     for (let i = startIndex - 1; i < startIndex + 2; i++) {
-        if (i == currentPageIndex) {
-            pageList.innerHTML += `<li><button class="pagingBtn" data="${i}" style="background-color: #f2f2f2;"><u>${i}</u></button></li>`;
+        if (i < 1 || i > pagingGroup) {
+            continue;
+        } else if (i == currentPageIndex) {
+            pageList.innerHTML += `<li><button class="pagingBtn" data="${i}" style="background-color: #f2f2f2;">${i}</button></li>`;
         } else {
             pageList.innerHTML += `<li><button class="pagingBtn" data="${i}" >${i}</button></li>`;
         }
@@ -553,6 +564,10 @@ function generateShopDetailPage(shopDetailInfo) {
                 <div class="shopCloseTime">
                     <span class="title">定休日</span>
                     <span>${shopCloseTime}</span>
+                </div>
+                <div class='shopSite'>
+                    <span class="title">公式サイト</span>
+                    <span><a href="${shopDetailInfo.urls.pc}" target="_blank">${shopDetailInfo.urls.pc}</a></span>
                 </div>
                 <div class="elseInfo">
                     <span class="title">その他の情報</span>
