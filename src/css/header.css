@@ -8,16 +8,17 @@ header {
     display             : flex;
     position            : fixed;
     flex-direction      : row;
-    justify-content     : end;
+    justify-content     : start;
+    align-items         : center;
     width               : 100%;
     height              : var(--header-height);
     background-color    : var(--base-color);
+    padding             : 0 5%;
     z-index             : 9999;
 }
 
-header .searchBar {
-    display             : flex;
-    justify-content     : center;
-    align-items         : center;
-    width               : 70%;
+header #title {
+    color               : #fff;
+    margin              : 0;
+    font-size           : 1.5rem;
 }

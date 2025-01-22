@@ -4,18 +4,23 @@ const geocoder = new google.maps.Geocoder();
 
 const areaInput = document.getElementById('area')
 
-getCurrentLocationBtn.addEventListener('click', function() {
+getCurrentLocationBtn.addEventListener('click', getCurrentLatlng, false);
+
+// 画面読み込み時に現在地を取得する
+getCurrentLatlng();
+
+function getCurrentLatlng() {
     getCurrentLocation((error, locationInfo) => {
         if (error) {
             console.error('現在地の取得に失敗しました');
         } else {
-            console.log(locationInfo);
+            
             areaInput.value = locationInfo.currentAreaName;
             areaInput.setAttribute('lat', locationInfo.currentLocation.lat);
             areaInput.setAttribute('lng', locationInfo.currentLocation.lng);
         }
     });
-});
+}
 
 function getCurrentLocation(callback) {
     let responseCurrentLocationInfo = {};
@@ -30,14 +35,14 @@ function getCurrentLocation(callback) {
                 (results, status) => {
                     if (status === 'OK') {
                         const currentAreaArr = results[0].address_components;   // 番地 → 町名 → 市区名 → 都道府県名 → 国名
-                        console.log(currentAreaArr);
+                        
                         const currentAreaArrLen = currentAreaArr.length;
                         const selectionCurrentAreaArr = currentAreaArr.filter(area => area.types.includes('political') && !area.types.includes('country')); // 都道府県名以降の要素を取得
                         const reverseSelectionCurrentAreaArr = selectionCurrentAreaArr.slice().reverse();   // 都道府県名 市区名 町名の順に並べる;
                         
                         let currentAreaName = '';
                         for (let i = 0; i < currentAreaArrLen; i++) {
-                            console.log(reverseSelectionCurrentAreaArr[i]);
+                            
                             if (reverseSelectionCurrentAreaArr[i].types.includes("sublocality")) {    // 数字が含まれている場合は住所として扱わない
                                 break;
                             }
@@ -109,12 +114,12 @@ function updateGenreUI() {
 
     selectedGenreBtnArr.forEach(function(selectedGenreBtn) {
         selectedGenreBtn.addEventListener('click', function() {
-            console.log("selected", selectedGenreBtnArr.length);
+            
             const selectedGenre = this.parentElement.getAttribute('data');
             genreArr.forEach(genreObj => {
                 if (genreObj.code === selectedGenre) {
                     genreObj.isSelected = false;
-                    console.log(genreObj);
+                    
                 }
             });
             updateGenreUI();
@@ -124,12 +129,12 @@ function updateGenreUI() {
     
     unselectedGenreBtnArr.forEach(function(unselectedGenreBtn) {
         unselectedGenreBtn.addEventListener('click', function() {
-            console.log("unselected", unselectedGenreBtnArr.length);
+            
             const unselectedGenre = this.parentElement.getAttribute('data');
             genreArr.forEach(genreObj => {
                 if (genreObj.code === unselectedGenre) {
                     genreObj.isSelected = true;
-                    console.log(genreObj);
+                    
                 }
             });
             updateGenreUI();
@@ -141,7 +146,7 @@ const displayUnselectedGenre        = document.getElementById('displayUnselected
 const openDisplayUnselectedGenre    = document.getElementById('openDisplayUnselectedGenre');
 
 openDisplayUnselectedGenre.addEventListener('click', function() {
-    console.log('click');
+    
     displayUnselectedGenre.classList.toggle('showSelectList');
 }, false);
 
@@ -231,7 +236,7 @@ searchBtn.addEventListener('click', function() {
             }
         ]
     };
-    console.log(serarchCondition);
+    
     fetchFilteredShopData(serarchCondition);
 });
 
@@ -276,12 +281,12 @@ function fetchFilteredShopData(conditionObj) {
         }
     }  else {
         if (conditionObj.condition[3].value === '6' && conditionObj.condition[2].value !== '') {   // 範囲指定をしない場合は緯度と経度を削除する
-            console.log('範囲指定をしない');
+            
             conditionObj.condition[0].value = '';
             conditionObj.condition[1].value = '';
 
         } else if (conditionObj.condition[3].value === '6' && conditionObj.condition[2].value === '') {
-            console.log('範囲指定をする');
+            
             conditionObj.condition[2].value = '';
             conditionObj.condition[3].value = 3;
         }
@@ -294,7 +299,7 @@ function fetchFilteredShopData(conditionObj) {
         format  : 'json',
     });
 
-    console.log(params.toString());
+    
 
     conditionObj.condition.forEach(condition => {
         if (condition.valueArr !== undefined) {
@@ -306,7 +311,7 @@ function fetchFilteredShopData(conditionObj) {
         }
     });
 
-    console.log(params.toString());
+    
 
     areaInput.setAttribute('lat', "");
     areaInput.setAttribute('lng', "");
@@ -321,9 +326,22 @@ function fetchFilteredShopData(conditionObj) {
         return response.json(); // レスポンスをJSONとしてパース
     })
     .then((fetchData) => {
-        const shopListJson = fetchData['results']['shop'];
-        console.log(shopListJson);
+        const shopListJson = fetchData.results.shop;
+
         resultDisplay.style.display = 'block';
+        isShowResultPage = true;
+
+        if (shopListJson.length === 0) {
+            nextBtn.style.display = 'none';
+            prevBtn.style.display = 'none';
+            resultList.innerHTML = '<h2 class="noresult">検索結果がありません</h2>';
+            return;
+        } else {
+            nextBtn.style.display = 'block';
+            prevBtn.style.display = 'block';
+        }
+
+
         resultList.innerHTML = '';
 
         const pagingGroup = Math.ceil(shopListJson.length / 5);
@@ -332,23 +350,26 @@ function fetchFilteredShopData(conditionObj) {
                 page    : i + 1,
                 shopInfoHtml : [
 
+                ],
+                elseInfo : [
+
                 ]
             });
             for (let j = 0; j < 5; j++) {
                 if (shopListJson[j] === undefined) {
                     break;
                 }
-                const shopDetails = shopListJson[i * 5 + j];
-                const shopName = '<h2 class="shopName">' + shopDetails.name + '</h2>';
-                const shopCatch = '<h3 class="shopCatch">' + shopDetails.genre.catch + '</h3>';
-                const shopAccess = '<div class="shopAccess"><img class="detailsIcon" src="/src/img/location.svg" alt="ピンのアイコン"><span>' + shopDetails.access + '</span></div>';
-                const shopThumbnail = '<img src="' + shopDetails.photo.pc.l + '" alt="店舗画像" class="shopThumbnail">';
-                const shopFee = '<div class="fee"><img class="detailsIcon" src="/src/img/yen.svg" alt="日本円のアイコン"><span>' + shopDetails.budget.name + '</span></div>';
-                const shopGenre = '<div class="genre"><img class="detailsIcon" src="/src/img/restaurant.svg" alt="食器のアイコン"><span>' + shopDetails.genre.name + '</span></div>';
+                const shopDetails       = shopListJson[i * 5 + j];
+                const shopName          = '<h2 class="shopName">' + shopDetails.name + '</h2>';
+                const shopCatch         = '<h3 class="shopCatch">' + shopDetails.genre.catch + '</h3>';
+                const shopAccess        = '<div class="shopAccess"><img class="detailsIcon" src="/src/img/location.svg" alt="ピンのアイコン"><span>' + shopDetails.access + '</span></div>';
+                const shopThumbnail     = '<img src="' + shopDetails.photo.pc.l + '" alt="店舗画像" class="shopThumbnail">';
+                const shopFee           = '<div class="fee"><img class="detailsIcon" src="/src/img/yen.svg" alt="日本円のアイコン"><span>' + shopDetails.budget.name + '</span></div>';
+                const shopGenre         = '<div class="genre"><img class="detailsIcon" src="/src/img/restaurant.svg" alt="食器のアイコン"><span>' + shopDetails.genre.name + '</span></div>';
                 const shopDetailTextArr = [shopName, shopCatch, shopGenre, shopAccess, shopFee];
-                const pushJsonHtml = '<li><button class="shopDetail"><div class="textInfo">' + shopDetailTextArr.join('') + '</div><div class="imgInfo">' + shopThumbnail + '</div></button></li>';
-                console.log(shopPagingListJson);
+                const pushJsonHtml      = `<li><button data=${j} class="shopDetail"><div class="textInfo">${shopDetailTextArr.join('')}</div><div class="imgInfo">${shopThumbnail}</div></button></li>`;
                 shopPagingListJson.group[i].shopInfoHtml[j] = pushJsonHtml;
+                shopPagingListJson.group[i].elseInfo[j]     = shopDetails;
             }
         }
         updateShopList(pageIndex);  // ページングの初期値は1
@@ -362,12 +383,14 @@ function fetchFilteredShopData(conditionObj) {
 const nextBtn = document.getElementById('nextBtn');
 const prevBtn = document.getElementById('prevBtn');
 
+/* ---------------- ページング機能を実装 ---------------- */
+
 function updateShopList(currentPageIndex) {
     // スクロールを一番上に戻す
     window.scrollTo(0, 0);
 
     resultList.innerHTML = '';
-    console.log(shopPagingListJson);
+    
     shopPagingListJson.group[currentPageIndex - 1].shopInfoHtml.forEach(html => {
         resultList.innerHTML += html;
     });
@@ -405,19 +428,19 @@ function updateShopList(currentPageIndex) {
             updateShopList(Number(pageIndex));
         });
     });
-}
 
-/* ---------------- 店舗詳細ページへ遷移 ---------------- */
-const jumpShopDetailBtn = document.getElementsByClassName('jumpShopDetail');
-const jumpShopDetailBtnArr = Array.from(jumpShopDetailBtn);
 
-const closeResultDisplayBtn = document.getElementById('closeResultDisplayBtn');
+    const shopDetailBtn = document.getElementsByClassName('shopDetail');
+    const shopDetailBtnArr = Array.from(shopDetailBtn);
 
-jumpShopDetailBtnArr.forEach(jumpShopDetailBtn => {
-    jumpShopDetailBtn.addEventListener('click', function() {
-        console.log('click');
+    shopDetailBtnArr.forEach(shopDetailBtn => {
+        shopDetailBtn.addEventListener('click', function() {
+            
+            const responseFetchData = getShopDetailInfo(this.getAttribute('data'), pageIndex)
+            generateShopDetailPage(responseFetchData);
+        });
     });
-});
+}
 
 nextBtn.addEventListener('click', function() {
     pageIndex += 1;
@@ -429,6 +452,127 @@ prevBtn.addEventListener('click', function() {
     updateShopList(pageIndex);
 });
 
+const closeResultDisplayBtn = document.getElementById('closeResultDisplayBtn');
+
 closeResultDisplayBtn.addEventListener('click', function() {
     resultDisplay.style.display = 'none';
+    isShowResultPage = false;
 });
+
+/* ---------------- 店舗詳細ページへ遷移 ---------------- */
+let isShowResultPage = false;
+const shopDetail = document.getElementById('details');
+
+function getShopDetailInfo(index, pageIndex) {
+    const shopDetailInfo = shopPagingListJson.group[pageIndex - 1].elseInfo[index];
+    return shopDetailInfo;
+}
+
+function generateShopDetailPage(shopDetailInfo) {
+    if (shopDetailInfo === undefined) {
+        return;
+    }
+    resultDisplay.style.display = 'none';
+    shopDetail.style.display = 'block';
+    
+    
+    const shopAddress = shopDetailInfo.address;
+    const shopOpenTime = shopDetailInfo.open;
+    const shopCloseTime = shopDetailInfo.close;
+
+    const shopElseInfoName = [
+        'カード利用可',
+        'Wi-Fiあり',
+        '禁煙席あり',
+        'ランチあり',
+        '深夜営業あり',
+        '駐車場あり',
+        'バリアフリー',
+        '座敷席あり',
+        '個室あり',
+        '掘りごたつ',
+        'こたつ',
+        '夜景が見える',
+        '貸切可',
+        'カラオケ',
+    ];
+    const shopElseInfo = {
+        card        : shopDetailInfo.card,
+        wifi        : shopDetailInfo.wifi,
+        nonSmoking  : shopDetailInfo.non_smoking,
+        lunch       : shopDetailInfo.lunch,
+        midnight    : shopDetailInfo.midnight,
+        parking     : shopDetailInfo.parking,
+        barrierFree : shopDetailInfo.barrier_free,
+        tatami      : shopDetailInfo.tatami,
+        privateRoom : shopDetailInfo.private_room,
+        horigotatsu : shopDetailInfo.horigotatsu,
+        kotatsu     : shopDetailInfo.kotatsu,
+        nightView   : shopDetailInfo.night_view,
+        charter     : shopDetailInfo.charter,
+        karaoke     : shopDetailInfo.karaoke,
+    };
+
+    let shopElseInfoHtml = '';
+    for (let i = 0; i < shopElseInfoName.length; i++) {
+        if (shopElseInfo[Object.keys(shopElseInfo)[i]] === 'あり') {
+            shopElseInfoHtml += `<li>${shopElseInfoName[i]}</li>`;
+        }
+    }
+
+
+    const shopDetailHtml = `
+        <button id="closeDetailsBtn"><img src="/src/img/arrow_back.svg"></button>
+        <div class="shopDetailInfo">
+            <h2 class="shopName">${shopDetailInfo.name}</h2>
+            <h3 class="shopCatch">${shopDetailInfo.genre.catch}</h3>
+            <div class="shopThumbnail">
+                <img src="${shopDetailInfo.photo.pc.l}" alt="店舗画像">
+            </div>
+            <div class="detailInfo">
+                <div class="genre">
+                    <span class="title">ジャンル</span>
+                    <span>${shopDetailInfo.genre.name}</span>
+                </div>
+                <div class="shopAddress">
+                    <span class="title">住所</span>
+                    <span>${shopAddress}</span>
+                </div>
+                <div class="shopAccess">
+                    <span class="title">アクセス</span>
+                    <span>${shopDetailInfo.access}</span>
+                </div>
+                <div class="fee">
+                    <span class="title">予算</span>
+                    <span>${shopDetailInfo.budget.name}</span>
+                </div>
+                <div class="shopOpenTime">
+                    <span class="title">営業時間</span>
+                    <span>${shopOpenTime}</span>
+                </div>
+                <div class="shopCloseTime">
+                    <span class="title">定休日</span>
+                    <span>${shopCloseTime}</span>
+                </div>
+                <div class="elseInfo">
+                    <span class="title">その他の情報</span>
+                    <ul class="shopDetailList">
+                        ${shopElseInfoHtml}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        `;
+    shopDetail.innerHTML = shopDetailHtml;
+    
+
+    const closeDetailsBtn = document.getElementById('closeDetailsBtn');
+
+    closeDetailsBtn.addEventListener('click', function() {
+        if (isShowResultPage) {
+            resultDisplay.style.display = 'block';
+        }
+        shopDetail.style.display = 'none';
+    });
+
+}

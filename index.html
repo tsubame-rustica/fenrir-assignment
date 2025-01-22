@@ -3,20 +3,26 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>フェンリル課題選考</title>
+        <title>クイックサーチ</title>
         <link rel="stylesheet" href="/src/css/sanitize.css">
         <link rel="stylesheet" href="/src/css/header.css">
         <link rel="stylesheet" href="/src/css/main.css">
         <link rel="stylesheet" href="/src/css/modal.css">
         <link rel="stylesheet" href="/src/css/condition.css">
         <link rel="stylesheet" href="/src/css/result.css">
+        <link rel="stylesheet" href="/src/css/details.css">
 
         <script src="http://maps.google.com/maps/api/js?key=AIzaSyBtUgCxdnXBRZphsE9NkL9KdwpazR-T1aY&language=ja"></script>
     </head>
     <body>
       <header>
           <div class="pageTitle">
-              <h1 id="title"></h1>
+              <h1 id="title">
+                <ruby>
+                  QuickSearch
+                  <rt>クイックサーチ</rt>
+                </ruby>
+              </h1>
           </div>
       </header>
       <main>
@@ -40,16 +46,6 @@
                   <button id="closeModalBtn" type="button">&times;</button>
                 </div>
                 <div id="modalContent">
-                  <div id="shopTitle">
-                    <h2>HOGEFUGA</h2>
-                  </div>
-                  <div id="catchCopy">
-                    キャッチコピー：駅から徒歩５分！
-                  </div>
-                  <div id="thumbnail">
-                    <ul id="thumbnailList">
-                    </ul>
-                  </div>
                 </div>
               </div>
           </div>
@@ -115,6 +111,9 @@
                 </ul>
                 <button id="nextBtn" type="button">&gt;</button>
               </div>
+            </div>
+            <div id="details">
+
             </div>
           </div>
       </main>

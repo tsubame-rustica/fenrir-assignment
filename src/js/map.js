@@ -2,6 +2,10 @@ let googleMap;
 let currentLocationMarker;
 let watchId;
 let searchResultsArr = [];
+let currentShowShopData;
+
+// ページ読み込み時に地図を初期化
+initMap();
 
 function initMap() {
     // 座標の初期値（東京駅）
@@ -67,11 +71,12 @@ function trackCurrentLocation() {
             }
         );
     } else {
-        console.log('Geolocation is not supported by your browser');
+        
     }
 }
 
 const modal         = document.getElementById('modal');
+const modalContent  = document.getElementById('modalContent');
 const modalTitle    = document.getElementById('shopTitle');
 const catchCopy     = document.getElementById('catchCopy');
 const shopThumbnail = document.getElementById('thumbnailList');
@@ -81,16 +86,144 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 
 function showShopModal(fetchData) {
 
-    const mapTools              = document.querySelectorAll('.gmnoprint.gm-bundled-control')[1];
+    currentShowShopData     = fetchData;    // モーダル画面をクリックしたときに使用する店舗情報を保持
 
-    modal.style.display         = 'block';
-    mapTools.style.display      = 'none';
+    const mapTools          = document.querySelectorAll('.gmnoprint.gm-bundled-control')[1];
 
-    modalTitle.innerHTML        = '<h2>' + fetchData['name'] + '</h2>';
-    catchCopy.innerHTML         = fetchData['catch'];
-    shopThumbnail.innerHTML     = '<img src="' + fetchData['photo']['pc']['l'] + '" alt="店舗画像" class="">';
+    modal.style.display     = 'block';
+    mapTools.style.display  = 'none';
+
+    const shopName          = '<h2 class="shopName">' + fetchData.name + '</h2>';
+    const shopCatch         = '<h3 class="shopCatch">' + fetchData.genre.catch + '</h3>';
+    const shopAccess        = '<div class="shopAccess"><img class="detailsIcon" src="/src/img/location.svg" alt="ピンのアイコン"><span>' + fetchData.access + '</span></div>';
+    const shopThumbnail     = '<img src="' + fetchData.photo.pc.l + '" alt="店舗画像" class="shopThumbnail">';
+    const shopFee           = '<div class="fee"><img class="detailsIcon" src="/src/img/yen.svg" alt="日本円のアイコン"><span>' + fetchData.budget.name + '</span></div>';
+    const shopGenre         = '<div class="genre"><img class="detailsIcon" src="/src/img/restaurant.svg" alt="食器のアイコン"><span>' + fetchData.genre.name + '</span></div>';
+    const shopDetailTextArr = [shopName, shopCatch, shopGenre, shopAccess, shopFee];
+    modalContent.innerHTML = `<button data=${fetchData.id} id="jumpDetails"><div class="textInfo">${shopDetailTextArr.join('')}</div><div class="imgInfo">${shopThumbnail}</div></button>`;
+
+
+    const jumpDetailsBtn = document.getElementById('jumpDetails');
+
+    jumpDetailsBtn.addEventListener('click', () => {
+        generateShopDetailPage(currentShowShopData);
+    });
 }
 
+const shopDetail    = document.getElementById('details');
+
+function generateShopDetailPage(shopDetailInfo) {
+    if (shopDetailInfo === undefined) {
+        return;
+    }
+    
+    mapScreen.style.display = 'none';
+    conditionScreen.style.display = 'block';
+    shopDetail.style.display = 'block';
+
+
+    
+    
+    const shopAddress   = shopDetailInfo.address;
+    const shopOpenTime  = shopDetailInfo.open;
+    const shopCloseTime = shopDetailInfo.close;
+
+    const shopElseInfoName = [
+        'カード利用可',
+        'Wi-Fiあり',
+        '禁煙席あり',
+        'ランチあり',
+        '深夜営業あり',
+        '駐車場あり',
+        'バリアフリー',
+        '座敷席あり',
+        '個室あり',
+        '掘りごたつ',
+        'こたつ',
+        '夜景が見える',
+        '貸切可',
+        'カラオケ',
+    ];
+    const shopElseInfo = {
+        card        : shopDetailInfo.card,
+        wifi        : shopDetailInfo.wifi,
+        nonSmoking  : shopDetailInfo.non_smoking,
+        lunch       : shopDetailInfo.lunch,
+        midnight    : shopDetailInfo.midnight,
+        parking     : shopDetailInfo.parking,
+        barrierFree : shopDetailInfo.barrier_free,
+        tatami      : shopDetailInfo.tatami,
+        privateRoom : shopDetailInfo.private_room,
+        horigotatsu : shopDetailInfo.horigotatsu,
+        kotatsu     : shopDetailInfo.kotatsu,
+        nightView   : shopDetailInfo.night_view,
+        charter     : shopDetailInfo.charter,
+        karaoke     : shopDetailInfo.karaoke,
+    };
+
+    let shopElseInfoHtml = '';
+    for (let i = 0; i < shopElseInfoName.length; i++) {
+        if (shopElseInfo[Object.keys(shopElseInfo)[i]] === 'あり') {
+            shopElseInfoHtml += `<li>${shopElseInfoName[i]}</li>`;
+        }
+    }
+
+
+    const shopDetailHtml = `
+        <button id="backMap"><img src="/src/img/arrow_back.svg"></button>
+        <div class="shopDetailInfo">
+            <h2 class="shopName">${shopDetailInfo.name}</h2>
+            <h3 class="shopCatch">${shopDetailInfo.genre.catch}</h3>
+            <div class="shopThumbnail">
+                <img src="${shopDetailInfo.photo.pc.l}" alt="店舗画像">
+            </div>
+            <div class="detailInfo">
+                <div class="genre">
+                    <span class="title">ジャンル</span>
+                    <span>${shopDetailInfo.genre.name}</span>
+                </div>
+                <div class="shopAddress">
+                    <span class="title">住所</span>
+                    <span>${shopAddress}</span>
+                </div>
+                <div class="shopAccess">
+                    <span class="title">アクセス</span>
+                    <span>${shopDetailInfo.access}</span>
+                </div>
+                <div class="fee">
+                    <span class="title">予算</span>
+                    <span>${shopDetailInfo.budget.name}</span>
+                </div>
+                <div class="shopOpenTime">
+                    <span class="title">営業時間</span>
+                    <span>${shopOpenTime}</span>
+                </div>
+                <div class="shopCloseTime">
+                    <span class="title">定休日</span>
+                    <span>${shopCloseTime}</span>
+                </div>
+                <div class="elseInfo">
+                    <span class="title">その他の情報</span>
+                    <ul class="shopDetailList">
+                        ${shopElseInfoHtml}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        `;
+    shopDetail.innerHTML = shopDetailHtml;
+    
+
+    const backMapBtn = document.getElementById('backMap');
+
+    // 表示をマップ画面に戻す
+    backMapBtn.addEventListener('click', function() {
+        mapScreen.style.display = 'block';
+        conditionScreen.style.display = 'none';
+        shopDetail.style.display = 'none';
+    });
+
+}
 
 function closeShopModal() {
     const mapTools              = document.querySelectorAll('.gmnoprint.gm-bundled-control')[1];
@@ -100,6 +233,7 @@ function closeShopModal() {
 }
 
 closeModalBtn.addEventListener('click', closeShopModal, false);
+
 
 function fetchRestaurantInfoFromMap(currentLocation) {
     const apiUrl = 'http://localhost:8080/foreign_api/gourmet/v1';
@@ -164,7 +298,7 @@ conditionBtn.addEventListener('click', {type: 'condition', handleEvent: switchSe
 
 // タブを切り替える際にタブのスタイルの変更と表示する要素の切り替えを行う
 function switchSearchType(e) {
-    console.log(this.type);
+    
     if (this.type === 'map') {
         mapTab.classList.add('selected');
         conditionTab.classList.remove('selected');
@@ -184,5 +318,3 @@ window.addEventListener('beforeunload', () => {
         navigator.geolocation.clearWatch(watchId);
     }
 });
-
-window.onload = initMap;
