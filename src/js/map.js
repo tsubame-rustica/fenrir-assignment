@@ -112,8 +112,7 @@ function fetchRestaurantInfoFromMap(currentLocation) {
         count   : 30,
         format  : 'json',     // レスポンス形式をJSONに指定
     });
-    console.log(params.toString());
-
+    
     fetch(`${apiUrl}?${params.toString()}`, {
         method: 'GET',
     })
