@@ -36,9 +36,14 @@ function getCurrentLocation(callback) {
                         const reverseSelectionCurrentAreaArr = selectionCurrentAreaArr.slice().reverse();   // 都道府県名 市区名 町名の順に並べる;
                         
                         let currentAreaName = '';
-                        reverseSelectionCurrentAreaArr.forEach(area => {
-                            currentAreaName += area.long_name;
-                        });
+                        for (let i = 0; i < currentAreaArrLen; i++) {
+                            console.log(reverseSelectionCurrentAreaArr[i]);
+                            if (reverseSelectionCurrentAreaArr[i].types.includes("sublocality")) {    // 数字が含まれている場合は住所として扱わない
+                                break;
+                            }
+                            currentAreaName += reverseSelectionCurrentAreaArr[i].long_name;
+                            
+                        }
 
                         responseCurrentLocationInfo = {
                             status              : 'success',
@@ -184,11 +189,15 @@ updateUnselectedDistanceList(defaultDistanceIndex);
 const searchBtn = document.getElementById('searchBtn');
 
 searchBtn.addEventListener('click', function() {
-    const area = document.getElementById('area').value;
+    let area = document.getElementById('area').value;
     const areaLat = document.getElementById('area').getAttribute('lat');
     const areaLng = document.getElementById('area').getAttribute('lng');
     const genre = genreArr.filter(genreObj => genreObj.isSelected === true).map(genreObj => genreObj.code);
     const distance = showSelectedDistance.getAttribute('data');
+
+    if (area === '') {
+        area = '東京都渋谷区';
+    }
    
     /**
      * @property {'latlng'|'address'|'genre'|'distance'} conditionName - 条件の名前
@@ -229,39 +238,63 @@ searchBtn.addEventListener('click', function() {
 const resultDisplay = document.getElementById('result');
 const resultList = document.getElementById('resultList');
 
+const pageList = document.getElementById('pageList');
+
+const shopPagingListJson = {
+    group   : []
+}
+
+let pageIndex = 1;
 
 function fetchFilteredShopData(conditionObj) {
     const apiUrl = 'http://localhost:8080/foreign_api/gourmet/v1';
     const apiKey = '2506182a2b82d52b';
 
     // パラメータに不足がないようにする
-    if (conditionObj.condition[0].value === '' || conditionObj.condition[0].lng === '') {
-        if (conditionObj.condition[2].value === '' || conditionObj.condition[3].value > 0) {
+    /*
+        - 緯度と経度が指定されていない場合
+            - 地域が指定されていない場合は現在地を取得する
+        - 範囲指定をしない場合は緯度と経度を削除する
+        - 地域が指定されていないかつ範囲指定をしない場合は検索範囲を1kmにする
+    */
+    if (conditionObj.condition[0].value === '' || conditionObj.condition[0].value === '') {   // 緯度と経度が指定されていない場合
+        if (conditionObj.condition[2].value === '') {   // 地域が指定されていない場合は現在地を取得する
             getCurrentLocation((error, locationInfo) => {
                 if (error) {
+                    const tokyoStationPos = {
+                        lat : 35.681236,
+                        lng : 139.767125,
+                    };
+                    conditionObj.condition[0].value = tokyoStationPos.lat;
+                    conditionObj.condition[1].value = tokyoStationPos.lng;
                     console.error('現在地の取得に失敗しました');
                 } else {
                     conditionObj.condition[0].value = locationInfo.currentLocation.lat;
-                    conditionObj.condition[0].value = locationInfo.currentLocation.lng;
-                    conditionObj.condition[1].value = locationInfo.currentAreaName;
+                    conditionObj.condition[1].value = locationInfo.currentLocation.lng;
                 }
             });
-            
-        } else if (conditionObj.condition[3].value > 0) {
-            conditionObj.condition[3].value = '';
         }
-    } else {
-        if (conditionObj.condition[4].value === '') {
-            conditionObj.condition[4].valueArr = 5;
+    }  else {
+        if (conditionObj.condition[3].value === '6' && conditionObj.condition[2].value !== '') {   // 範囲指定をしない場合は緯度と経度を削除する
+            console.log('範囲指定をしない');
+            conditionObj.condition[0].value = '';
+            conditionObj.condition[1].value = '';
+
+        } else if (conditionObj.condition[3].value === '6' && conditionObj.condition[2].value === '') {
+            console.log('範囲指定をする');
+            conditionObj.condition[2].value = '';
+            conditionObj.condition[3].value = 3;
         }
-        conditionObj.condition[2].value = '';
     }
+    
     
     const params = new URLSearchParams({
         key     : apiKey,
         count   : 50,
         format  : 'json',
     });
+
+    console.log(params.toString());
 
     conditionObj.condition.forEach(condition => {
         if (condition.valueArr !== undefined) {
@@ -292,15 +325,110 @@ function fetchFilteredShopData(conditionObj) {
         console.log(shopListJson);
         resultDisplay.style.display = 'block';
         resultList.innerHTML = '';
-        shopListJson.forEach((shopDetails) => {
-            const shopName = shopDetails.name;
-            const shopAccess = shopDetails.access;
-            const shopThumbnail = shopDetails.photo.pc.l;
 
-            resultList.innerHTML += '<li><h2 class="shopName">' + shopName + '</h2><p class="shopAccess">' + shopAccess + '</p><img src="' + shopThumbnail + '" alt="店舗画像" class="shopThumbnail"></li>';
-        });
+        const pagingGroup = Math.ceil(shopListJson.length / 5);
+        for (let i = 0; i < pagingGroup; i++) {
+            shopPagingListJson.group.push({
+                page    : i + 1,
+                shopInfoHtml : [
+
+                ]
+            });
+            for (let j = 0; j < 5; j++) {
+                if (shopListJson[j] === undefined) {
+                    break;
+                }
+                const shopDetails = shopListJson[i * 5 + j];
+                const shopName = '<h2 class="shopName">' + shopDetails.name + '</h2>';
+                const shopCatch = '<h3 class="shopCatch">' + shopDetails.genre.catch + '</h3>';
+                const shopAccess = '<div class="shopAccess"><img class="detailsIcon" src="/src/img/location.svg" alt="ピンのアイコン"><span>' + shopDetails.access + '</span></div>';
+                const shopThumbnail = '<img src="' + shopDetails.photo.pc.l + '" alt="店舗画像" class="shopThumbnail">';
+                const shopFee = '<div class="fee"><img class="detailsIcon" src="/src/img/yen.svg" alt="日本円のアイコン"><span>' + shopDetails.budget.name + '</span></div>';
+                const shopGenre = '<div class="genre"><img class="detailsIcon" src="/src/img/restaurant.svg" alt="食器のアイコン"><span>' + shopDetails.genre.name + '</span></div>';
+                const shopDetailTextArr = [shopName, shopCatch, shopGenre, shopAccess, shopFee];
+                const pushJsonHtml = '<li><button class="shopDetail"><div class="textInfo">' + shopDetailTextArr.join('') + '</div><div class="imgInfo">' + shopThumbnail + '</div></button></li>';
+                console.log(shopPagingListJson);
+                shopPagingListJson.group[i].shopInfoHtml[j] = pushJsonHtml;
+            }
+        }
+        updateShopList(pageIndex);  // ページングの初期値は1
     })
     .catch(error => {
         console.error('Error:', error); // エラーハンドリング
     });
 }
+
+
+const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+
+function updateShopList(currentPageIndex) {
+    // スクロールを一番上に戻す
+    window.scrollTo(0, 0);
+
+    resultList.innerHTML = '';
+    console.log(shopPagingListJson);
+    shopPagingListJson.group[currentPageIndex - 1].shopInfoHtml.forEach(html => {
+        resultList.innerHTML += html;
+    });
+
+    pageList.innerHTML = '';
+
+    nextBtn.style.visibility = 'visible';
+    prevBtn.style.visibility = 'visible';
+
+    const pagingGroup = shopPagingListJson.group.length;
+
+    pageIndex = currentPageIndex;
+    let startIndex = currentPageIndex;
+    if (currentPageIndex === 1) {
+        startIndex = 2;
+        prevBtn.style.visibility = 'hidden';
+    } else if (currentPageIndex === pagingGroup) {
+        startIndex -= 1;
+        nextBtn.style.visibility = 'hidden';
+    }
+    for (let i = startIndex - 1; i < startIndex + 2; i++) {
+        if (i == currentPageIndex) {
+            pageList.innerHTML += `<li><button class="pagingBtn" data="${i}" style="background-color: #f2f2f2;"><u>${i}</u></button></li>`;
+        } else {
+            pageList.innerHTML += `<li><button class="pagingBtn" data="${i}" >${i}</button></li>`;
+        }
+    }
+
+    const pagingBtn = document.getElementsByClassName('pagingBtn');
+    const pagingBtnArr = Array.from(pagingBtn);
+
+    pagingBtnArr.forEach(pagingBtn => {
+        pagingBtn.addEventListener('click', function() {
+            const pageIndex = this.getAttribute('data');
+            updateShopList(Number(pageIndex));
+        });
+    });
+}
+
+/* ---------------- 店舗詳細ページへ遷移 ---------------- */
+const jumpShopDetailBtn = document.getElementsByClassName('jumpShopDetail');
+const jumpShopDetailBtnArr = Array.from(jumpShopDetailBtn);
+
+const closeResultDisplayBtn = document.getElementById('closeResultDisplayBtn');
+
+jumpShopDetailBtnArr.forEach(jumpShopDetailBtn => {
+    jumpShopDetailBtn.addEventListener('click', function() {
+        console.log('click');
+    });
+});
+
+nextBtn.addEventListener('click', function() {
+    pageIndex += 1;
+    updateShopList(pageIndex);
+});
+
+prevBtn.addEventListener('click', function() {
+    pageIndex -= 1;
+    updateShopList(pageIndex);
+});
+
+closeResultDisplayBtn.addEventListener('click', function() {
+    resultDisplay.style.display = 'none';
+});
