@@ -1,0 +1,66 @@
+@import url(/src/css/variable.css);
+
+#details {
+    position        : absolute;
+    display         : none;
+    width           : 100%;
+    min-height      : calc(100svh - var(--filter-tab-height) - var(--header-height));
+    height          : max-content;
+    top             : var(--filter-tab-height);
+    left            : 0;
+    padding-bottom  : 4rem;
+    background-color: #fff;
+    z-index         : 100;
+}
+
+
+#details #closeDetailsBtn, #details #backMap {
+    position        : relative;
+    display         : flex;
+    justify-content : center;
+    align-items     : center;
+    font-size       : 1.5rem;
+    border          : none;
+    background-color: #0000;
+}
+
+#details .shopDetailInfo {
+    width           : 90%;
+    margin          : 0 auto;
+}
+
+#details .shopDetailInfo .detailInfo {
+    padding         : 1rem 0;
+}
+
+#details .shopDetailInfo .detailInfo > * {
+    display         : flex;
+    flex-direction  : row;
+    border-bottom   : solid 1px #dbdbdb;
+    padding         : 0.5rem 0;
+    font-size       : 0.8rem;
+}
+
+#details .shopDetailInfo .title {
+    width           : 25%;
+    font-weight     : bold;
+}
+
+#details .shopDetailInfo :where(span:nth-child(2), ul) {
+    width           : 75%;
+}
+
+#details .shopDetailInfo ul {
+    display         : flex;
+    flex-direction  : row;
+    gap             : 0.5rem;
+    list-style-type : none;
+    padding         : 0;
+    margin          : 0;
+}
+
+#details .shopThumbnail {
+    position        : relative;
+    width           : 60%;
+    margin          : 0 auto;
+}

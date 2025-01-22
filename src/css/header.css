@@ -1,0 +1,24 @@
+@import url(/src/css/variable.css);
+
+body {
+    margin              : 0;
+}
+
+header {
+    display             : flex;
+    position            : fixed;
+    flex-direction      : row;
+    justify-content     : start;
+    align-items         : center;
+    width               : 100%;
+    height              : var(--header-height);
+    background-color    : var(--base-color);
+    padding             : 0 5%;
+    z-index             : 9999;
+}
+
+header #title {
+    color               : #fff;
+    margin              : 0;
+    font-size           : 1.5rem;
+}

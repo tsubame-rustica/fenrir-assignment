@@ -1,13 +1,118 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>クイックサーチ</title>
+        <link rel="stylesheet" href="/src/css/sanitize.css">
+        <link rel="stylesheet" href="/src/css/header.css">
+        <link rel="stylesheet" href="/src/css/main.css">
+        <link rel="stylesheet" href="/src/css/modal.css">
+        <link rel="stylesheet" href="/src/css/condition.css">
+        <link rel="stylesheet" href="/src/css/result.css">
+        <link rel="stylesheet" href="/src/css/details.css">
+
+        <script src="http://maps.google.com/maps/api/js?key=AIzaSyBtUgCxdnXBRZphsE9NkL9KdwpazR-T1aY&language=ja"></script>
+    </head>
+    <body>
+      <header>
+          <div class="pageTitle">
+              <h1 id="title">
+                <ruby>
+                  QuickSearch
+                  <rt>クイックサーチ</rt>
+                </ruby>
+              </h1>
+          </div>
+      </header>
+      <main>
+          <div class="filterTab">
+              <div class="map selected">
+                  <button id="searchMapBtn" type="button">地図から探す</button>
+              </div>
+              <div class="condition">
+                  <button id="searchConditionBtn" type="button">条件から探す</button>
+              </div>
+          </div>
+          <div id="map">
+              <div id="showMap"></div>
+              <div id="modal">
+                <div id="closeModal">
+                  <button id="closeModalBtn" type="button">&times;</button>
+                </div>
+                <div id="modalContent">
+                </div>
+              </div>
+          </div>
+          <div id="condition" style="display: none;">
+            <form action="">
+              <div class="area">
+                <p for="">県や市区町村</p>
+                <div class="areaInput">
+                  <input type="text" name="area" id="area" lat="" lng="" placeholder="例）東京都渋谷区">
+                  <button id="getCurrentLocationBtn" type="button">現在地を取得</button>
+                </div>
+              </div>
+              <div class="genre">
+                <p>ジャンル</p>
+                <div class="genreSelect">
+                  <div class="displaySelectedGenre">
+                    <div class="displaySelectedGenreInner">
+                      <ul id="selectedList">
+                      </ul>
+                    </div>
+                    <button id="openDisplayUnselectedGenre" type="button"><img src="/src/img/arrow_down.svg" alt="下矢印のアイコン"></button>
+                  </div>
+                  <div class="displayUnselectedGenre" id="displayUnselectedGenre">
+                    <ul id="unselectedList">
+  
+                    </ul>
+                  </div>  
+                </div>
+              </div>
+              <div class="distance">
+                <p>距離を選択</p>
+                <div class="distanceSelect">
+                  <div class="displaySelectedDistance">
+                    <div id="showSlectedDistance" data="6">指定しない</div>
+                    <button id="openDisplayUnselectedDistance" type="button"><img src="/src/img/arrow_down.svg" alt="下矢印のアイコン"></button>
+                  </div>
+                  <div class="displayUnselectedDistance" id="displayUnselectedDistance">
+                    <ul id="distanceList">
+                      <li data="1"><button type="button">300m以内</button></li>
+                      <li data="2"><button type="button">500m以内</button></li>
+                      <li data="3"><button type="button">1km以内</button></li>
+                      <li data="4"><button type="button">2km以内</button></li>
+                      <li data="5"><button type="button">3km以内</button></li>
+                      <li data="6"><button type="button">指定しない</button></li>
+                    </ul>
+                  </div>  
+                </div>
+              </div>
+              <div class="searchBtnOuter">
+                <button id="searchBtn" type="button">検索</button>
+              </div>
+            </form>
+            <div id="result" class="result">
+              <div class="closeResultDisplay">
+                <button id="closeResultDisplayBtn" type="button">&times;</button>
+              </div>
+              <ul id="resultList">
+
+              </ul>
+              <div id="paging">
+                <button id="prevBtn" type="button">&lt;</button>
+                <ul id="pageList">
+                </ul>
+                <button id="nextBtn" type="button">&gt;</button>
+              </div>
+            </div>
+            <div id="details">
+
+            </div>
+          </div>
+      </main>
+      <script type="module" src="./src/js/map.js"></script>
+      <script type="module" src="./src/js/condition.js"></script>
+    </body>
 </html>

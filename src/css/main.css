@@ -1,0 +1,61 @@
+@import url(/src/css/variable.css);
+
+body {
+    font-family         : var(--font-family);
+}
+
+
+main {
+    position            : relative;
+    width               : 100%;
+    height              : calc(100% - var(--header-height));
+    top                 : var(--header-height);
+}
+
+main .filterTab {
+    position            : fixed;
+    display             : flex;
+    flex-direction      : row;
+    width               : 100%;
+    height              : var(--filter-tab-height);
+    background-color    : #fff;
+    z-index             : 1000;
+}
+
+main .filterTab > * {
+    width               : 50%;
+    height              : 100%;
+    border-bottom       : solid 4px #0000;
+}
+
+main .filterTab .selected {
+    border-bottom       : solid 4px var(--base-color);
+}
+
+main .filterTab button {
+    width               : 100%;
+    height              : 100%;
+    background-color    : #0000;
+    border              : none;
+    padding             : 0;
+    margin              : 0;
+}
+
+main #map {
+    position            : relative;
+    width               : 100%;
+    height              : calc(100svh - var(--filter-tab-height) - var(--header-height));
+    top                 : var(--filter-tab-height);
+}
+
+main #map #showMap {
+    width               : 100%;
+    height              : 100%;
+}
+
+main #condition {
+    position            : relative;
+    width               : 100%;
+    height              : calc(100% - var(--filter-tab-height) - var(--header-height));
+    padding-top         : var(--filter-tab-height);
+}

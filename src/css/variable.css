@@ -1,0 +1,15 @@
+/* M Plus2（半角用フォント） */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@100..900&display=swap');
+
+/* Noto Sans JP（全角用フォント） */
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@100..900&family=Noto+Sans+JP:wght@100..900&display=swap');
+
+
+:root {
+    --header-height     : 8svh;
+    --filter-tab-height : 6svh;
+
+    --base-color        : #FF9D4C;
+
+    --font-family       : 'M PLUS 2', 'Noto Sans JP', sans-serif;
+}
