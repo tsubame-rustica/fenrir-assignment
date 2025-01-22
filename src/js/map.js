@@ -88,10 +88,8 @@ function showShopModal(fetchData) {
 
     currentShowShopData     = fetchData;    // モーダル画面をクリックしたときに使用する店舗情報を保持
 
-    const mapTools          = document.querySelectorAll('.gmnoprint.gm-bundled-control')[1];
 
     modal.style.display     = 'block';
-    mapTools.style.display  = 'none';
 
     const shopName          = '<h2 class="shopName">' + fetchData.name + '</h2>';
     const shopCatch         = '<h3 class="shopCatch">' + fetchData.genre.catch + '</h3>';
@@ -229,7 +227,6 @@ function closeShopModal() {
     const mapTools              = document.querySelectorAll('.gmnoprint.gm-bundled-control')[1];
 
     modal.style.display         = 'none';
-    mapTools.style.display      = 'block';
 }
 
 closeModalBtn.addEventListener('click', closeShopModal, false);

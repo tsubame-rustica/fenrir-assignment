@@ -4,9 +4,11 @@
     position        : absolute;
     display         : none;
     width           : 100%;
-    height          : calc(100svh - var(--filter-tab-height) - var(--header-height));
+    min-height      : calc(100svh - var(--filter-tab-height) - var(--header-height));
+    height          : max-content;
     top             : var(--filter-tab-height);
     left            : 0;
+    padding-bottom  : 4rem;
     background-color: #fff;
     z-index         : 100;
 }
